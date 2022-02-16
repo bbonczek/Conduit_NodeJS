@@ -49,6 +49,7 @@ module.exports.createArticle = async (req, res) => {
 		if (!data.title) throw new Error('Article title is required');
 		if (!data.body) throw new Error('Article body is required');
 		if (!data.description) throw new Error('Article description is required');
+		if (data.matureContent === null || data.matureContent === undefined) throw new Error('Articles mature content is required');
 
 		//Find out author object
 		const user = await User.findByPk(req.user.email);
@@ -59,6 +60,7 @@ module.exports.createArticle = async (req, res) => {
 			title: data.title,
 			description: data.description,
 			body: data.body,
+			matureContent: data.matureContent,
 			UserEmail: user.email,
 		});
 
