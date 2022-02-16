@@ -255,6 +255,41 @@ module.exports.getAllArticles = async (req, res) => {
 	}
 };
 
+module.exports.getLastTenMatureContentArticles = async (req, res) => {
+	const limit = 10
+	try {
+		const articles = await Article.findAll({
+			where: {
+				matureContent: true
+			},
+			include: [
+				{
+					model: Tag,
+					attributes: ['name'],
+				},
+				{
+					model: User,
+					attributes: ['email', 'username', 'bio', 'image'],
+				},
+			],
+			limit: parseInt(limit),
+		});
+
+		let sanitizedArticles = [];
+		for (let t of articles) {
+			let addArt = sanitizeOutputMultiple(t);
+			sanitizedArticles.push(addArt);
+		}
+
+		res.json({ sanitizedArticles });
+	} catch (e) {
+		const code = res.statusCode ? res.statusCode : 422;
+		return res.status(code).json({
+			errors: { body: ['Could not get articles', e.message] },
+		});
+	}
+};
+
 module.exports.getFeed = async (req, res) => {
 	try {
 		const query = `
